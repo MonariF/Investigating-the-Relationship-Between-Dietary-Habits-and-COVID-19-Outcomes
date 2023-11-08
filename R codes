@@ -1,0 +1,160 @@
+covid=read.csv(file.choose())
+summary(covid)
+colnames(covid)
+
+covid$Confirmed
+
+# Load necessary libraries
+library(dplyr)
+
+# Load the dataset (replace 'path_to_dataset' with the actual path)
+covid <- read.csv("C:/Users/Fred Monari/Desktop/Pulication sample/Datasets/Covid 19/Fat supply/Fat_supply_Quantity_Data.csv")
+# Load the necessary library
+
+library(readr)
+
+
+# Check for missing values
+missing_values <- colSums(is.na(covid))
+print(missing_values)
+
+
+# Select relevant columns for analysis
+selected_columns <- covid %>%
+  select(Confirmed, Deaths, Recovered, Active,
+         Alcoholic.Beverages, Animal.Products, Fruits...Excluding.Wine, Vegetables,
+         Obesity, Undernourished)
+
+
+# Calculate total consumption of fruits and vegetables
+selected_columns$total_fruits_vegetables <- selected_columns$Fruits...Excluding.Wine +
+  selected_columns$Vegetables
+
+# Convert non-numeric columns to numeric
+selected_columns <- selected_columns %>%
+  mutate_if(~ !is.numeric(.), as.numeric)
+
+# Calculate correlation matrix
+correlation_matrix <- cor(selected_columns, use = "complete.obs")
+
+# Display correlation matrix
+print(correlation_matrix)
+
+
+
+library(corrplot)
+
+# Create a correlation heatmap
+corrplot(correlation_matrix, method = "color")
+
+
+
+install.packages("GGally")
+library(GGally)
+library(GGally)
+
+# Create a pairwise scatterplot matrix
+ggpairs(selected_columns)
+
+
+library(ggplot2)
+
+# Create a correlation plot
+correlation_plot <- ggplot(selected_columns, aes(x = Confirmed, y = Deaths)) +
+  geom_point() +
+  geom_smooth(method = "lm", se = FALSE, color = "blue") +
+  labs(title = "Correlation Plot", x = "Confirmed Cases", y = "Deaths")
+
+print(correlation_plot)
+
+
+
+
+
+
+
+
+# Load necessary libraries for linear regression
+library(stats)
+
+
+
+# Check for missing values in the Confirmed column
+sum(is.na(selected_columns$Confirmed))
+
+# Check for non-numeric values in the Confirmed column
+sum(!is.na(selected_columns$Confirmed) & !is.numeric(selected_columns$Confirmed))
+
+# Remove rows with missing or non-numeric Confirmed values
+selected_columns <- selected_columns %>%
+  filter(!is.na(Confirmed) & is.numeric(Confirmed))
+
+class(selected_columns$Confirmed)
+
+as.numeric(selected_columns$Confirmed)
+
+sum(is.na(selected_columns$Confirmed))
+
+unique(selected_columns$Confirmed)
+
+# Build linear regression model
+model <- lm(Confirmed ~ Alcoholic.Beverages + Animal.Products + Fruits...Excluding.Wine +
+              Vegetables + Obesity + Undernourished, data = selected_columns)
+
+# Display model summary
+install.packages("party")
+library(party)
+summary(model)
+
+
+
+
+# Calculate R-squared value
+r_squared <- summary(model)$r.squared
+print(paste("R-squared value:", r_squared))
+
+
+
+# Display coefficients and p-values
+coefficients <- summary(model)$coefficients
+print(coefficients)
+
+
+
+
+library(corrplot)
+
+# Calculate correlation matrix
+correlation_matrix <- cor(selected_columns, use = "complete.obs")
+
+# Create a correlation heatmap
+corrplot(correlation_matrix, method = "color")
+
+
+
+library(ggplot2)
+
+# Create a scatterplot matrix
+scatterplot_matrix <- ggplot(selected_columns, aes(x = Confirmed, y = c(Alcoholic.Beverages, Animal.Products, Fruits...Excluding.Wine, Vegetables))) +
+  geom_point() +
+  labs(title = "Scatterplot Matrix", x = "Confirmed Cases", y = "Dietary Consumption") +
+  facet_grid(vars(Obesity, Undernourished))
+
+print(scatterplot_matrix)
+
+
+
+
+# Create a regression plot
+regression_plot <- ggplot(selected_columns, aes(x = Obesity, y = Confirmed)) +
+  geom_point() +
+  geom_smooth(method = "lm", se = FALSE, color = "blue") +
+  labs(title = "Regression Plot", x = "Obesity", y = "Confirmed Cases")
+
+print(regression_plot)
+
+
+
+
+
+
